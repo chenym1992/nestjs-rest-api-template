@@ -16,7 +16,7 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { ArticleEntity } from './entities/article.entity';
 
 @Controller('articles')
-@ApiTags('articles')
+@ApiTags('Articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 

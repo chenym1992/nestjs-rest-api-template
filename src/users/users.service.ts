@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 import { Injectable } from '@nestjs/common';
@@ -5,13 +6,22 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+const roundsOfHashing = process.env.ROUNDS_OF_HASHING;
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-  create(createUserDto: CreateUserDto) {
-    return this.prisma.user.create({ data: createUserDto });
-  }
+  async create(createUserDto: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      roundsOfHashing,
+    );
 
+    createUserDto.password = hashedPassword;
+
+    return this.prisma.user.create({
+      data: createUserDto,
+    });
+  }
   findAll() {
     return this.prisma.user.findMany();
   }
@@ -20,8 +30,18 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.prisma.user.update({ data: updateUserDto, where: { id } });
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        roundsOfHashing,
+      );
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
   }
 
   remove(id: number) {

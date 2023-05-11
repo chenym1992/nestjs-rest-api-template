@@ -1,0 +1,14 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "median-clone",
+      "database": "median-db",
+      "username": "myuser",
+      "password": "mypassword"
+    }
+  ]
+}
